@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog as fd
+from PIL import Image, ImageTk
 import shutil
 import os
 import json
@@ -138,17 +139,12 @@ def submitData():
         messagebox.showwarning(window, "Masih ada field yang kosong")
     else:
         rak_buku.append(Buku(judul, kategori, penulis, genre, int(tahun_terbit), penerbit, keadaan, path_foto))
-        jsonData = { json.dumps(rak_buku[-1].__dict__) }
-
-        with open("rakbuku.json", "w") as outfile:
-            outfile.write(jsonData)
 
 
 # Submit Button
 
 btn_submit = Button(leftFrame, text = "Simpan", command = submitData, width = 45, pady = 5)
 btn_submit.grid(row = 11, column = 0, columnspan = 2, pady = 5)
-
 
 
 # Right Frame
@@ -159,7 +155,74 @@ appTitle.pack(anchor = W)
 appDesc = Label(rightFrame, text = "Aplikasi pengelolaan rak bukumu")
 appDesc.pack(anchor = W)
 
-b_tampilkanBuku = Button(rightFrame, text = "Tampilkan Semua Buku", width = 25, pady = 5)
+def showBuku(rak_buku):
+    showBukuWindow = Toplevel()
+    showBukuWindow.title("Semua Buku")
+    
+    # Headers
+    head1  =  Label(showBukuWindow, text = "No", width = 3, borderwidth = 1, relief = "solid")
+    head1.grid(row = 0, column = 0)
+
+    head9  =  Label(showBukuWindow, text = "Judul", width = 15, borderwidth = 1, relief = "solid")
+    head9.grid(row = 0, column = 1)
+    
+    head2  =  Label(showBukuWindow, text = "Kategori", width = 15, borderwidth = 1, relief = "solid")
+    head2.grid(row = 0, column = 2)
+
+    head3  =  Label(showBukuWindow, text = "Penulis", width = 15, borderwidth = 1, relief = "solid")
+    head3.grid(row = 0, column = 3)
+
+    head4  =  Label(showBukuWindow, text = "Genre", width = 20, borderwidth = 1, relief = "solid")
+    head4.grid(row = 0, column = 4)
+
+    head5  =  Label(showBukuWindow, text = "Tahun Terbit", width = 10, borderwidth = 1, relief = "solid")
+    head5.grid(row = 0, column = 5)
+
+    head6  =  Label(showBukuWindow, text = "Penerbit", width = 15, borderwidth = 1, relief = "solid")
+    head6.grid(row = 0, column = 6)
+
+    head7  =  Label(showBukuWindow, text = "Keadaan", width = 8, borderwidth = 1, relief = "solid")
+    head7.grid(row = 0, column = 7)
+
+    head8  =  Label(showBukuWindow, text = "Foto", width = 20, borderwidth = 1, relief = "solid")
+    head8.grid(row = 0, column = 8)
+
+    
+    for index, buku in enumerate(rak_buku):
+        no = Label(showBukuWindow, text = str(index+1), width = 3, borderwidth = 1, relief = "solid")
+        no.grid(row = index + 1, column = 0)
+
+        judul = Label(showBukuWindow, text = buku.get_judul(), width = 15, borderwidth = 1, relief = "solid")
+        judul.grid(row = index + 1, column = 1)
+
+        kategori = Label(showBukuWindow, text = buku.get_kategori(), width = 15, borderwidth = 1, relief = "solid")
+        kategori.grid(row = index + 1, column = 2)
+
+        penulis = Label(showBukuWindow, text = buku.get_penulis(), width = 15, borderwidth = 1, relief = "solid")
+        penulis.grid(row = index + 1, column = 3)
+
+        genre = Label(showBukuWindow, text = buku.get_genre(), width = 20, borderwidth = 1, relief = "solid")
+        genre.grid(row = index + 1, column = 4)
+
+        tahun_terbit = Label(showBukuWindow, text = buku.get_tahun_terbit(), width = 10, borderwidth = 1, relief = "solid")
+        tahun_terbit.grid(row = index + 1, column = 5)
+
+        penerbit = Label(showBukuWindow, text = buku.get_penerbit(), width = 15, borderwidth = 1, relief = "solid")
+        penerbit.grid(row = index + 1, column = 6)
+
+        keadaan = Label(showBukuWindow, text = buku.get_keadaan(), width = 8, borderwidth = 1, relief = "solid")
+        keadaan.grid(row = index + 1, column = 7)
+        
+        foto = Button(showBukuWindow, text = "Lihat", width = 20, borderwidth = 1, relief = "solid")
+        foto.grid(row = index + 1, column = 8)
+        # image = Image.open(buku.get_path_foto())
+        # image.thumbnail((200,200))
+        # foto = ImageTk.PhotoImage(image)
+        # lbl_foto = Label(showBukuWindow, image = foto, width = 200, borderwidth = 1, relief = "solid")
+        # lbl_foto.img = foto
+
+
+b_tampilkanBuku = Button(rightFrame, text = "Tampilkan Semua Buku", command = lambda showBuku = showBuku: showBuku(rak_buku), width = 25, pady = 5)
 b_tampilkanBuku.pack(pady = (60, 5), anchor = S)
 
 b_hapusBuku = Button(rightFrame, text = "Hapus Semua Buku", width = 25, pady = 5)
@@ -173,21 +236,5 @@ b_exit.pack(pady = (60, 5), anchor = S)
 
 
 
-# for index, h in enumerate(hunians):
-#     idx  =  Label(frame, text = str(index+1), width = 5, borderwidth = 1, relief = "solid")
-#     idx.grid(row = index, column = 0)
-
-#     type  =  Label(frame, text = h.get_jenis(), width = 15, borderwidth = 1, relief = "solid")
-#     type.grid(row = index, column = 1)
-
-#     if h.get_jenis() ! =  "Indekos": 
-#         name  =  Label(frame, text = " " + h.get_nama_pemilik(), width = 40, borderwidth = 1, relief = "solid", anchor = "w")
-#         name.grid(row = index, column = 2)
-#     else:
-#         name  =  Label(frame, text = " " + h.get_nama_penghuni(), width = 40, borderwidth = 1, relief = "solid", anchor = "w")
-#         name.grid(row = index, column = 2)
-
-#     b_detail  =  Button(frame, text = "Details ", command = lambda index = index: details(index))
-#     b_detail.grid(row = index, column = 3)
 
 window.mainloop()

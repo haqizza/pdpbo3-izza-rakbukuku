@@ -12,6 +12,9 @@ class Buku():
     def get_judul(self):
         return self.judul
 
+    def get_kategori(self):
+        return self.kategori
+
     def get_penulis(self):
         return self.penulis
 
@@ -23,6 +26,9 @@ class Buku():
 
     def get_penerbit(self):
         return self.penerbit
+
+    def get_keadaan(self):
+        return self.keadaan
 
     def get_path_foto(self):
         return self.path_foto
