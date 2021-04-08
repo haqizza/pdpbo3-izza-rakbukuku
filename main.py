@@ -133,12 +133,16 @@ def submitData():
     tahun_terbit = tb_th_terbit.get()
     penerbit = tb_penerbit.get()
     keadaan = keadaanVar.get()
-    path_foto = savePath
-    print(judul, kategori, penulis, genre, int(tahun_terbit), penerbit, keadaan, path_foto)
+    try:
+        path_foto = savePath
+    except:
+        path_foto = ""
+    
     if(judul == "" or kategori == "" or penulis == "" or genre == "" or tahun_terbit == "" or penerbit == "" or keadaan == "" or path_foto == ""):
-        messagebox.showwarning(window, "Masih ada field yang kosong")
+        messagebox.showwarning("Peringatan", "Masih ada field yang kosong!")
     else:
         rak_buku.append(Buku(judul, kategori, penulis, genre, int(tahun_terbit), penerbit, keadaan, path_foto))
+        messagebox.showinfo("Berhasil", "Buku berhasil disimpan!")
 
 
 # Submit Button
@@ -152,11 +156,28 @@ btn_submit.grid(row = 11, column = 0, columnspan = 2, pady = 5)
 appTitle = Label(rightFrame, text = "Rak Bukuku", font=("TkDefaultFont", 25,))
 appTitle.pack(anchor = W)
 
-appDesc = Label(rightFrame, text = "Aplikasi pengelolaan rak bukumu")
+appDesc = Label(rightFrame, text = "Aplikasi pengelolaan rak buku")
 appDesc.pack(anchor = W)
 
+
+#Image Viewer
+def showImage(image_path):
+    showImageWindow = Toplevel()
+    showImageWindow.title = "Foto"
+    showImageWindow.geometry("500x500")
+    
+    image = Image.open(image_path)
+    image.thumbnail((500, 500))
+    foto = ImageTk.PhotoImage(image)
+    lbl_foto = Label(showImageWindow, image = foto)
+    lbl_foto.pack()
+    lbl_foto.img = foto
+    lbl_foto.place(x = -2 , y = (250 - image.size[1] / 2))
+
+
+# Show All Book
 def showBuku(rak_buku):
-    showBukuWindow = Toplevel()
+    showBukuWindow = Toplevel(padx = 20, pady = 20)
     showBukuWindow.title("Semua Buku")
     
     # Headers
@@ -213,28 +234,62 @@ def showBuku(rak_buku):
         keadaan = Label(showBukuWindow, text = buku.get_keadaan(), width = 8, borderwidth = 1, relief = "solid")
         keadaan.grid(row = index + 1, column = 7)
         
-        foto = Button(showBukuWindow, text = "Lihat", width = 20, borderwidth = 1, relief = "solid")
+        foto = Button(showBukuWindow, text = "Lihat", command = lambda showImage = showImage: showImage(buku.get_path_foto()), width = 20, borderwidth = 1, relief = "solid")
         foto.grid(row = index + 1, column = 8)
-        # image = Image.open(buku.get_path_foto())
-        # image.thumbnail((200,200))
-        # foto = ImageTk.PhotoImage(image)
-        # lbl_foto = Label(showBukuWindow, image = foto, width = 200, borderwidth = 1, relief = "solid")
-        # lbl_foto.img = foto
 
-
+# Button Show All Book
 b_tampilkanBuku = Button(rightFrame, text = "Tampilkan Semua Buku", command = lambda showBuku = showBuku: showBuku(rak_buku), width = 25, pady = 5)
 b_tampilkanBuku.pack(pady = (60, 5), anchor = S)
 
-b_hapusBuku = Button(rightFrame, text = "Hapus Semua Buku", width = 25, pady = 5)
+
+# Delete All Book
+def deleteAllBook():
+    yes = messagebox.askyesno("Konfirmasi", "Hapus Seluruh data?")
+    if(yes):
+        rak_buku.clear()
+        messagebox.showinfo("Berhasil", "Semua data berhasil dihapus")
+
+#Delete All Book Button
+b_hapusBuku = Button(rightFrame, text = "Hapus Semua Buku", command = deleteAllBook, width = 25, pady = 5)
 b_hapusBuku.pack(pady = 5, anchor = S)
 
-b_tentang = Button(rightFrame, text = "Tentang", width = 25, pady = 5)
+# About Window
+def about():
+    aboutWindow = Toplevel(padx = 20, pady = 20)
+    aboutWindow.title("Tentang")
+
+    appName = Label(aboutWindow, text = "Nama Aplikasi")
+    appName.grid(row = 0, column = 0, sticky = W)
+
+    appName1 = Label(aboutWindow, text = ": Rak Bukuku")
+    appName1.grid(row = 0, column = 1, sticky = W)
+
+    appDesc = Label(aboutWindow, text = "Keterangan")
+    appDesc.grid(row = 1, column = 0, sticky = W)
+
+    appDesc1 = Label(aboutWindow, text = ": Aplikasi pengelolaan rak buku")
+    appDesc1.grid(row = 1, column = 1, sticky = W)
+
+    developer = Label(aboutWindow, text = "Pembuat")
+    developer.grid(row = 2, column = 0, sticky = W)
+
+    developer1 = Label(aboutWindow, text = ": Muhammad Izzatul Haq (1904618)")
+    developer1.grid(row = 2, column = 1, sticky = W)
+    
+
+#About Button
+b_tentang = Button(rightFrame, text = "Tentang", command = lambda about = about: about(), width = 25, pady = 5)
 b_tentang.pack(pady = 5, anchor = S)
 
-b_exit = Button(rightFrame, text = "Exit", command = window.quit, width = 25, pady = 5)
+#Exit Confirmation
+def exitApp():
+    yes = messagebox.askyesno("Konfirmasi", "Keluar Aplikasi?")
+    window.quit() if yes else False
+         
+
+#Exit Button
+b_exit = Button(rightFrame, text = "Exit", command = exitApp, width = 25, pady = 5)
 b_exit.pack(pady = (60, 5), anchor = S)
-
-
 
 
 window.mainloop()
